@@ -1,15 +1,16 @@
-name: flutter_calendar
-description: A new Flutter package project.
-version: 0.0.1
-author:
-homepage:
+name: calendar_flutter
+description: A custom calendar for flutter apps. It supports displaying events as a continuous UI.
+version: 1.0.0
+author: Vikas Jilla <jillavikas@gmail.com>
+homepage: https://github.com/VikasJilla/flutter_calendar
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  auto_size_text : ^2.0.1
 
 dev_dependencies:
   flutter_test:
