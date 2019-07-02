@@ -67,7 +67,7 @@ class _CustomCalendarState extends State<CustomCalendar>
   Widget getWeekDaysView() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12.0),
-      color: Color(0xFF1A609F),
+      color: Color(0x551A609F),
       child: Row(
         children: <Widget>[
           for (String day in getWeekDays())
@@ -79,7 +79,7 @@ class _CustomCalendarState extends State<CustomCalendar>
                       day,
                       style: Theme.of(context)
                           .textTheme
-                          .display1
+                          .body1
                           .copyWith(color: Colors.black),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,

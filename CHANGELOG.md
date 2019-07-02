@@ -1,6 +1,8 @@
-## [1.0.2] - 02-07-2019.
+## [1.0.5] - 02-07-2019.
 
 * Formatted files 
+* decreased font size of day names and color change
+* bug fixes in Calendar Event
 
 
 ## [1.0.0] - 02-07-2019.

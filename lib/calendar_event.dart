@@ -6,7 +6,7 @@ class CalendarEvent {
   /// used while painting event in calendar
   int positionInStack = -1; //current position
 
-  CalendarEvent._();
+  CalendarEvent();
   static List<CalendarEvent> _events;
 
   static List<CalendarEvent> get eventsList => _events;
