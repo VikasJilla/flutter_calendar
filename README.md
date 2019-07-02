@@ -23,7 +23,8 @@ Container(
 
 Then you will see the UI as below:
 
-![](example/images/no_events.JPG)
+
+<img src="example/images/no_events.JPG" width="300" height="600" />
 
 If you want to add the events, you need to first set the list of events then build the widget which has CustomCalendar as child(this can be found in example):
 
@@ -48,4 +49,4 @@ void setCalendarEvents(){
 
 UI with events would look like:
 
-![](example/images/with_events.JPG)
+<img src="example/images/with_events.JPG" width="300" height="600" />
