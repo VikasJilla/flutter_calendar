@@ -10,12 +10,10 @@ class CalendarMonthWidget extends StatefulWidget {
   final DateTime currentMonthDate;
   final Size dayWidgetSize;
 
-  CalendarMonthWidget(
-    {
-      @required this.currentMonthDate,
-      @required this.dayWidgetSize,
-    }
-  );
+  CalendarMonthWidget({
+    @required this.currentMonthDate,
+    @required this.dayWidgetSize,
+  });
 
   @override
   _CalendarMonthWidgetState createState() => _CalendarMonthWidgetState();
@@ -33,19 +31,19 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
     int numberOfWeeksInMonth = getNumberOfWeeksInMonth(widget.currentMonthDate);
     return Container(
       child: Column(
-          children: <Widget>[
-            for(int i = 0;i < numberOfWeeksInMonth; i++)getWeek(i),          
-          ],
+        children: <Widget>[
+          for (int i = 0; i < numberOfWeeksInMonth; i++) getWeek(i),
+        ],
       ),
     );
   }
 
-  Widget getWeek(int weekNumber){
+  Widget getWeek(int weekNumber) {
     int daysBeforeStart = getPaddingBeforeStartDayOfMonth();
-    int noOfDaysTillPastWeek = (weekNumber)*7 - daysBeforeStart;
-    setEventsInWeekWithStartDate(noOfDaysTillPastWeek+1);
+    int noOfDaysTillPastWeek = (weekNumber) * 7 - daysBeforeStart;
+    setEventsInWeekWithStartDate(noOfDaysTillPastWeek + 1);
     return Container(
-      child:createChildren(noOfDaysTillPastWeek+1),
+      child: createChildren(noOfDaysTillPastWeek + 1),
     );
   }
 
@@ -120,10 +118,10 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
       children: <Widget>[
         Row(
           mainAxisSize: MainAxisSize.min,
-          children:dayViewWidgets,
+          children: dayViewWidgets,
         ),
-        ...stackWidgets          
-      ],      
+        ...stackWidgets
+      ],
     );
   }
 
@@ -154,19 +152,25 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
 
 
   /// returns an empty view - the invalid days at the start and end of the month view with no date in them
-  Widget getEmptyDay(){
+  Widget getEmptyDay() {
     return Container(
-      decoration: BoxDecoration(shape: BoxShape.rectangle,border: Border.all(color: Colors.grey[300],width: 0.35),color: Colors.white),
+      decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          border: Border.all(color: Colors.grey[300], width: 0.35),
+          color: Colors.white),
       width: widget.dayWidgetSize.width,
       height: widget.dayWidgetSize.height,
       padding: EdgeInsets.only(top: 5),
     );
   }
-  
-  /// creates place holders which acts as dummy events -- to avoid overlapping a day events with events that 
+
+  /// creates place holders which acts as dummy events -- to avoid overlapping a day events with events that
   /// range between 2 to any no.of days
-  Widget getEventPlaceHolder(){
-    return SizedBox(width: widget.dayWidgetSize.width,height:eventItemHt,);
+  Widget getEventPlaceHolder() {
+    return SizedBox(
+      width: widget.dayWidgetSize.width,
+      height: eventItemHt,
+    );
   }
 
   /// return a single event widget that might be added to a day view or else 
@@ -201,33 +205,36 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
       )
     );
   }
-  
-/// creates and returns a text view with [date] as the text in it.
-/// 
-/// if date is today then it returns a circular widget with [date] as text and background color as #FF1E90FF
-  Widget getDateWidget(int date){
+
+  /// creates and returns a text view with [date] as the text in it.
+  ///
+  /// if date is today then it returns a circular widget with [date] as text and background color as #FF1E90FF
+  Widget getDateWidget(int date) {
     DateTime now = DateTime.now();
-    bool isToday = (now.day == date && now.month == widget.currentMonthDate.month && now.year == widget.currentMonthDate.year);
-    return getCircularWidget(       
-      padding: EdgeInsets.all(0),
-      child: Text(
-        '$date',
-        style: Theme.of(context).textTheme.display1.copyWith(color: isToday?Colors.white:Colors.black,fontSize: 13)
-      ),
-      fillColor: isToday?Color(0xFF1E90FF):Colors.transparent
-    );
+    bool isToday = (now.day == date &&
+        now.month == widget.currentMonthDate.month &&
+        now.year == widget.currentMonthDate.year);
+    return getCircularWidget(
+        padding: EdgeInsets.all(0),
+        child: Text('$date',
+            style: Theme.of(context).textTheme.display1.copyWith(
+                color: isToday ? Colors.white : Colors.black, fontSize: 13)),
+        fillColor: isToday ? Color(0xFF1E90FF) : Colors.transparent);
   }
 
-  List<CalendarEvent> sortedAccordingToTheDuration(DateTime date){
+  List<CalendarEvent> sortedAccordingToTheDuration(DateTime date) {
     List<CalendarEvent> events = List();
-    currentDayEventPositionsInStack = List();//resetting current day positions in stack
-    for(CalendarEvent event in eventsInCurrentWeek){
-      DateTime startDate = DateTime(event.startTime.year,event.startTime.month,event.startTime.day);
-      DateTime endDate = DateTime(event.endTime.year,event.endTime.month,event.endTime.day);
-      if(date.compareTo(startDate) >= 0 && date.compareTo(endDate) <= 0){
-        if(events.contains(event))continue;
+    currentDayEventPositionsInStack =
+        List(); //resetting current day positions in stack
+    for (CalendarEvent event in eventsInCurrentWeek) {
+      DateTime startDate = DateTime(
+          event.startTime.year, event.startTime.month, event.startTime.day);
+      DateTime endDate =
+          DateTime(event.endTime.year, event.endTime.month, event.endTime.day);
+      if (date.compareTo(startDate) >= 0 && date.compareTo(endDate) <= 0) {
+        if (events.contains(event)) continue;
         events.add(event);
-        if(event.positionInStack >= 0){
+        if (event.positionInStack >= 0) {
           currentDayEventPositionsInStack.add(event.positionInStack);
         }
       }
@@ -236,41 +243,52 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
     return events;
   }
 
-  int comparator(CalendarEvent event1,CalendarEvent event2){        
+  int comparator(CalendarEvent event1, CalendarEvent event2) {
     int compareOutput = event1.startTime.compareTo(event2.startTime);
-    if(compareOutput < 0)return -1;//makes event1 come before event2 in the result list
-    else if(compareOutput > 0)return 1;//makes event2 come before event1 in the result list
-    else{
-      return event1.startTime.difference(event1.endTime).inMilliseconds.abs().compareTo(event2.startTime.difference(event2.endTime).inMilliseconds.abs());
+    if (compareOutput < 0)
+      return -1; //makes event1 come before event2 in the result list
+    else if (compareOutput > 0)
+      return 1; //makes event2 come before event1 in the result list
+    else {
+      return event1.startTime
+          .difference(event1.endTime)
+          .inMilliseconds
+          .abs()
+          .compareTo(
+              event2.startTime.difference(event2.endTime).inMilliseconds.abs());
     }
   }
 
-  void setEventsInWeekWithStartDate(int date){
+  void setEventsInWeekWithStartDate(int date) {
     int totDays = getNumberOfDays();
     eventsInCurrentWeek = List();
-    for(int i=0;i<7;i++,date++){
-      if(date <= 0 || date > totDays)continue;
-      eventsInCurrentWeek.addAll(getEventsOn(DateTime(widget.currentMonthDate.year,widget.currentMonthDate.month,date)));
+    for (int i = 0; i < 7; i++, date++) {
+      if (date <= 0 || date > totDays) continue;
+      eventsInCurrentWeek.addAll(getEventsOn(DateTime(
+          widget.currentMonthDate.year, widget.currentMonthDate.month, date)));
     }
   }
 
-  List<CalendarEvent> getEventsOn(DateTime date){    
-    List<int> eventPositions = CalendarEvent.getList(date.month,date.year);
+  List<CalendarEvent> getEventsOn(DateTime date) {
+    List<int> eventPositions = CalendarEvent.getList(date.month, date.year);
     List<CalendarEvent> eventsOnDate = List();
-    for(int pos in eventPositions){
+    for (int pos in eventPositions) {
       CalendarEvent event = CalendarEvent.eventsList[pos];
-      DateTime startDate = DateTime(event.startTime.year,event.startTime.month,event.startTime.day);
-      DateTime endDate = DateTime(event.endTime.year,event.endTime.month,event.endTime.day);
-      if(date.compareTo(startDate) >= 0 && date.compareTo(endDate) <= 0){
+      DateTime startDate = DateTime(
+          event.startTime.year, event.startTime.month, event.startTime.day);
+      DateTime endDate =
+          DateTime(event.endTime.year, event.endTime.month, event.endTime.day);
+      if (date.compareTo(startDate) >= 0 && date.compareTo(endDate) <= 0) {
         event.positionInStack = -1;
         eventsOnDate.add(event);
-      }      
+      }
     }
     return eventsOnDate;
   }
 
-  int getPaddingBeforeStartDayOfMonth(){
-    DateTime dateTime = DateTime(widget.currentMonthDate.year,widget.currentMonthDate.month,1);
+  int getPaddingBeforeStartDayOfMonth() {
+    DateTime dateTime = DateTime(
+        widget.currentMonthDate.year, widget.currentMonthDate.month, 1);
     return dateTime.weekday == 7 ? 0 : dateTime.weekday;
   }
 

@@ -1,6 +1,6 @@
 name: calendar_flutter
 description: A custom calendar for flutter apps. It supports displaying events as a continuous UI.
-version: 1.0.0
+version: 1.0.5
 author: Vikas Jilla <jillavikas@gmail.com>
 homepage: https://github.com/VikasJilla/flutter_calendar
 
