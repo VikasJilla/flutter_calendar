@@ -57,40 +57,63 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
   ///
   ///[eventWidgetsInDay] events that happen on single day and also in some cases like the day is first day of week and an event that occurs on more days but end on this day will also be added to this
   
+  
   Widget createChildren(int currentDayNumber){
-    List<Widget> dayViewWidgets = List();
-    List<Widget> stackWidgets = List();
-    int numberOfEventsToDisplay = (widget.dayWidgetSize.height-dateTxtHt)~/eventItemHt;
+    final List<Widget> dayViewWidgets = [];
+    final List<Widget> stackWidgets = [];    
     //creating 7 days
     for(int i = 0;i < 7;i++,currentDayNumber++){      
-      List<Widget> eventWidgetsInDay = List();
+      final List<Widget> eventWidgetsInDay = [];
       if(currentDayNumber <= 0 || currentDayNumber > getNumberOfDays()){//adding empty views for invalid positions in calendar
         dayViewWidgets.add(getEmptyDay());
       }
       else{
         //get list of events on this date sorted according to their start date and add them to stack or to a dayview          
-        DateTime currentDay = DateTime(widget.currentMonthDate.year,widget.currentMonthDate.month,currentDayNumber);
-        List<CalendarEvent> sorted = sortedAccordingToTheDuration(currentDay);
-        for(CalendarEvent event in sorted){      
-          DateTime startDate = DateTime(event.startTime.year,event.startTime.month,event.startTime.day);
-          DateTime endDate = DateTime(event.endTime.year,event.endTime.month,event.endTime.day);
-          if(numberOfEventsToDisplay != 0 && (currentDayEventPositionsInStack.length >= numberOfEventsToDisplay || eventWidgetsInDay.length >= numberOfEventsToDisplay)){
-            break;
-          }
-          if(event.positionInStack >= 0){
-            eventWidgetsInDay.add(getEventPlaceHolder());
-            continue;
-          }
-          else if((startDate.difference(currentDay).inDays.abs() > 0 || endDate.difference(currentDay).inDays.abs() > 0) && currentDay.compareTo(DateTime(currentDay.year,currentDay.month,getNumberOfDays())) != 0){
-            checkAndAddEventToStack(numberOfEventsToDisplay, event, currentDay, currentDayNumber, i, stackWidgets, eventWidgetsInDay);
-          }
-          else{
-            if(eventWidgetsInDay.length >= numberOfEventsToDisplay)continue;
-            else eventWidgetsInDay.add(getEventItem(eventPosition: eventWidgetsInDay.length, title: event.title,eventDurationMoreThanOneDay: endDate.difference(startDate).inDays>1));
+        final int numberOfEventsToDisplay = (widget.dayWidgetSize.height-dateTxtHt)~/eventItemHt;
+        final DateTime currentDay = DateTime(widget.currentMonthDate.year,widget.currentMonthDate.month,currentDayNumber);
+        final List<CalendarEvent> sorted = sortedAccordingToTheDuration(currentDay);
+        if(numberOfEventsToDisplay != 0){
+          for(CalendarEvent event in sorted){      
+            final DateTime startDate = DateTime(event.startTime.year,event.startTime.month,event.startTime.day);
+            final DateTime endDate = DateTime(event.endTime.year,event.endTime.month,event.endTime.day);
+            if(eventWidgetsInDay.length == numberOfEventsToDisplay && eventWidgetsInDay.length >= currentDayEventPositionsInStack.length){
+              break;
+            }
+            if(event.positionInStack >= 0){
+              eventWidgetsInDay.add(getEventPlaceHolder());
+              continue;
+            }
+            else if((startDate.difference(currentDay).inDays.abs() > 0 || endDate.difference(currentDay).inDays.abs() > 0) && currentDay.compareTo(DateTime(currentDay.year,currentDay.month,getNumberOfDays())) != 0){
+              checkAndAddEventToStack(numberOfEventsToDisplay, event, currentDay, currentDayNumber, i, stackWidgets, eventWidgetsInDay);
+            }
+            else{
+              if(eventWidgetsInDay.length >= numberOfEventsToDisplay)continue;
+              else {
+                for(int position = 0;position < numberOfEventsToDisplay;position++){
+                  if(currentDayEventPositionsInStack.contains(position) || (position < eventWidgetsInDay.length && eventWidgetsInDay.elementAt(position) is EventItem)){
+                    //ignoring position if the position is already occupied in stack or if the position already has valid event item widget
+                    continue;
+                  }
+                  eventWidgetsInDay.insert(position,getEventItem(event: event,));
+                  break;
+                } 
+              }
+            }
           }
         }
         //added a day with event widgets
         dayViewWidgets.add(getDayWidget(currentDay,eventWidgetsInDay));
+        if(sorted.length-numberOfEventsToDisplay > 0){
+          const size = 25.0;
+          stackWidgets.add(
+            Positioned(
+              left: i*widget.dayWidgetSize.width,
+              top:0,
+              width: size,
+              child: XmoreWidget(sorted.length-numberOfEventsToDisplay,size: size,),
+            )
+          );
+        }
       }
     }
     return Stack(
@@ -104,29 +127,31 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
     );
   }
 
+
 /// adds an ranged event to stack by checking the positions that are empty
-  void checkAndAddEventToStack(int numberOfEventsToDisplay, CalendarEvent event, DateTime currentDay, int currentDayNumber, int i, List<Widget> stackWidgets, List<Widget> eventWidgetsInDay) {
+ void checkAndAddEventToStack(int numberOfEventsToDisplay, CalendarEvent event, DateTime currentDay, int currentDayNumber, int i, List<Widget> stackWidgets, List<Widget> eventWidgetsInDay) {
     for(int position = 0;position < numberOfEventsToDisplay;position++){
-      if(currentDayEventPositionsInStack.contains(position)){
+      if(currentDayEventPositionsInStack.contains(position)  || (position < eventWidgetsInDay.length && eventWidgetsInDay.elementAt(position) is EventItem)){
         continue;
       }
       currentDayEventPositionsInStack.add(position);
       event.positionInStack = position;
-      int eventDuration = event.endTime.difference(currentDay).inDays+1;
-      int noOfDaysLeftInWeek = (getNumberOfDays() - currentDayNumber)+1 >= (7-i) ? 7 - i:(getNumberOfDays()-currentDayNumber)+1;
-      double width = (eventDuration <= noOfDaysLeftInWeek?eventDuration:noOfDaysLeftInWeek) * widget.dayWidgetSize.width;
+      final int eventDuration = event.endTime.difference(currentDay).inDays+1;
+      final int noOfDaysLeftInWeek = (getNumberOfDays() - currentDayNumber)+1 >= (7-i) ? 7 - i:(getNumberOfDays()-currentDayNumber)+1;
+      final double width = (eventDuration <= noOfDaysLeftInWeek?eventDuration:noOfDaysLeftInWeek) * widget.dayWidgetSize.width;
       stackWidgets.add(Positioned(
         left: i*widget.dayWidgetSize.width,
-        top: (position*eventItemHt+dateTxtHt),
+        top: position*eventItemHt+dateTxtHt,
         width: width,
         child: IgnorePointer(child: 
-        getEventItem(eventPosition: event.positionInStack,title: event.title,eventDurationMoreThanOneDay: true,width: width))
+        getEventItem(event: event,width: width))
       ));
       eventWidgetsInDay.add(getEventPlaceHolder());                  
       break;//break after the event is added
       // 
     }
   }
+
 
   /// returns an empty view - the invalid days at the start and end of the month view with no date in them
   Widget getEmptyDay(){
@@ -144,17 +169,16 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
     return SizedBox(width: widget.dayWidgetSize.width,height:eventItemHt,);
   }
 
-/// return a single event widget that might be added to a day view or else 
+  /// return a single event widget that might be added to a day view or else 
 /// to stack to display as a continuous UI event through days
-  Widget getEventItem({@required int eventPosition,@required String title, @required bool eventDurationMoreThanOneDay,double width}){
+  Widget getEventItem({@required CalendarEvent event,double width}){
      return EventItem(
       eventItemHt, 
       width??widget.dayWidgetSize.width,
-      eventPosition,
-      title,
-      eventDurationMoreThanOneDay:eventDurationMoreThanOneDay,
+      event,
     );
   }
+
 
 /// returns a [day] view(contains date and events on particular date) in a week by adding the [eventWidgets]
   Widget getDayWidget(DateTime day,List<Widget> eventWidgets){
@@ -254,51 +278,107 @@ class _CalendarMonthWidgetState extends State<CalendarMonthWidget> {
     return getNumberOfDaysInMonth(widget.currentMonthDate);
   }
 }
-
 class EventItem extends StatelessWidget {
-  final int verticalPadding = 4;
-  final int horizontalPadding = 5;
+  const EventItem(this.height,this.width,this.event,{this.horizontalPadding = 4,this.verticalPadding = 4});
+  
+  final int verticalPadding;
+  final int horizontalPadding;
+
   final double height;
   final double width;
-  final int position;
-  final String title;
-  final bool eventDurationMoreThanOneDay;
-  EventItem(this.height,this.width,this.position,this.title,{this.eventDurationMoreThanOneDay = false,});
-
+  final CalendarEvent event;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       padding: EdgeInsets.symmetric(vertical: verticalPadding/2),
       child: Container(
         width: width.toDouble()-horizontalPadding,
         height: (height-verticalPadding).toDouble(),
-        padding: EdgeInsets.symmetric(horizontal: horizontalPadding.toDouble()),
-        decoration: BoxDecoration(
-          borderRadius:eventDurationMoreThanOneDay?BorderRadius.all(Radius.circular(0)): BorderRadius.horizontal(left: Radius.circular((height-verticalPadding)/2),right: Radius.circular((height-verticalPadding)/2)),
-          color: getColorBasedOnPosition()
-        ),
-        child:eventDurationMoreThanOneDay?getTitleWidget():Center(
-          child: getTitleWidget()
-        ),
+        color: event.getEventColor(),
+        child:Center(child: getTitleWidget(context)),
       )
     );
   }
 
-  Widget getTitleWidget(){
-    return AutoSizeText
+  Widget getTitleWidget(BuildContext context){
+    return Text
     (
-      title,
-      maxFontSize: 12,
-      minFontSize: 10,
-      style: TextStyle(fontFamily: "AvenirLTStd",color: Colors.black87,),
+      event.title,
+      style: Theme.of(context).textTheme.body1.copyWith(fontSize: 14),
       overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
       maxLines: 1,
     );
   }
+}
 
-  Color getColorBasedOnPosition(){//use extension in here   
-   return Color(0xFF1A609F).withAlpha(150);
+
+
+class XmoreWidget extends StatelessWidget {
+
+  const XmoreWidget(this.xmoreVal,{this.size = 25});
+
+  final int xmoreVal;
+
+  final double size;
+  
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      child: SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: xmoreVal>9?0:0.5),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: AutoSizeText(
+                  '+$xmoreVal',
+                  style: Theme.of(context).textTheme.display1.copyWith(color: Colors.white,fontSize: 11),
+                  maxFontSize: 12,
+                  minFontSize: 8,
+                  maxLines: 2,
+                )
+              ),
+            )
+          ],
+        ),
+      ),
+      painter:TrianglePainter() ,
+    );
   }
+
+}
+
+
+class TrianglePainter extends CustomPainter {
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    
+    final Paint paintBrush = Paint();
+    paintBrush.color = Color(0xFFffc422).withAlpha(150);
+
+    //reversed triangle
+    final reversePath = Path();
+    reversePath.lineTo(0, 0);
+    reversePath.lineTo(size.width, 0);
+    reversePath.lineTo(0, size.width);
+    reversePath.lineTo(0, 0);
+    reversePath.close();
+
+    canvas.drawPath(reversePath,paintBrush);
+
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+    
 }

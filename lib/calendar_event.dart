@@ -1,9 +1,12 @@
 
+import 'package:flutter/material.dart';
+
 class CalendarEvent{
 
   String title;
   String extension,path;
   DateTime startTime,endTime;
+  Color bgColor;
 
   /// used while painting event in calendar
   int positionInStack = -1;//current position
@@ -57,6 +60,10 @@ class CalendarEvent{
   bool isImageType(){
     return (extension != null && (extension == "jpeg" || extension == "jpg" || extension == "png" || extension == "gif"));
   }
+
+  Color getEventColor() {
+    return bgColor??Colors.grey;
+  }
 }
 
   int numberOfMonthsBetween(DateTime startDate,DateTime endDate,{bool inclusiveStartAndEnd = true}){
@@ -76,3 +83,4 @@ class CalendarEvent{
     }
     return -1;
   }
+

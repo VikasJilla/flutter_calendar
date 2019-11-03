@@ -1,4 +1,4 @@
-library flutter_calendar;
+library calendar_flutter;
 
 import 'dart:async';
 import 'dart:ui';

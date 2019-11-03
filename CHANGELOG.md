@@ -1,3 +1,4 @@
-## [1.0.0] - TODO: Add release date.
+## [1.0.0] - 30/06/2019.
 
-* TODO: Describe initial release.
+* A calendar that automatically paints with in given size constraints.
+* Paints events through dates as continuous UI.
