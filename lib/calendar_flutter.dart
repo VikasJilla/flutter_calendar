@@ -23,7 +23,7 @@ class _CustomCalendarState extends State<CustomCalendar>
   double itemWidth;
   DateTime _currentDate = DateTime.now();
   PageController _controller;
-  int prevIndex = 3;
+  int prevIndex = 12;
   StreamController<int> _dateStreamController = StreamController();
 
   @override

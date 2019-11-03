@@ -1,3 +1,8 @@
+## [1.1.5] - 03-11-2019
+
+* Support for showing custom background color for events
+* New UI for showing count of events that are not displayed in the day.
+
 ## [1.0.5] - 02-07-2019.
 
 * Formatted files 

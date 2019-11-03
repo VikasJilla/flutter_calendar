@@ -34,14 +34,36 @@ void setCalendarEvents(){
 
     CalendarEvent event = CalendarEvent();
     event.title = "Meeting";
-    event.startTime = DateTime(2019,07,01);
-    event.endTime = DateTime(2019,07,10);
+    event.startTime = DateTime(2019,11,01);
+    event.endTime = DateTime(2019,11,10);
+    event.bgColor = Colors.redAccent;
+    eventsList.add(event);
+
+    event = CalendarEvent();
+    event.title = "Meeting1";
+    event.startTime = DateTime(2019,11,09);
+    event.endTime = DateTime(2019,11,09);
+    event.bgColor = Colors.redAccent;
     eventsList.add(event);
 
     event = CalendarEvent();
     event.title = "Meeting2";
-    event.startTime = DateTime(2019,07,06);
-    event.endTime = DateTime(2019,07,15);
+    event.startTime = DateTime(2019,11,10);
+    event.endTime = DateTime(2019,11,10);
+    event.bgColor = Colors.redAccent;
+    eventsList.add(event);
+
+    event = CalendarEvent();
+    event.title = "Meeting3";
+    event.startTime = DateTime(2019,11,01);
+    event.endTime = DateTime(2019,11,10);
+    event.bgColor = Colors.redAccent;
+    eventsList.add(event);
+
+    event = CalendarEvent();
+    event.title = "Meeting2";
+    event.startTime = DateTime(2019,11,06);
+    event.endTime = DateTime(2019,11,15);
     eventsList.add(event);
     CalendarEvent.setListAndUpdateMap(eventsList);
   }
@@ -49,4 +71,4 @@ void setCalendarEvents(){
 
 UI with events would look like:
 
-<img src="example/images/with_events.JPG" width="300" height="600" />
+<img src="example/images/multipleEventsAndBGColor.png" width="300" height="600" />
